@@ -1,35 +1,59 @@
-import { Coffee } from "lucide-react";
-import CartWidget from "./cart-widget";
+import { NavLink } from "react-router-dom";
+import { ShoppingCart, Coffee } from "lucide-react";
 
-export default function NavBar() {
-    return (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md">
-            <div className="w-full px-4">
-                <div className="flex items-center justify-between h-16">
-                    <div className="flex items-center gap-2">
-                        <Coffee className="text-orange-500"/>
-                        <span className="text-2xl">Aroma</span>
-                    </div>
+export default function Navbar({ getTotalItems }) {
+  const totalItems = getTotalItems();
 
-                    <nav>
-                        <ul className="flex gap-4">
-                            <li className="hover:text-orange-300 cursor-pointer transition-colors duration-200">
-                                Productos
-                            </li>
-                            <li className="hover:text-orange-300 cursor-pointer transition-colors duration-200">
-                                Nosotros
-                            </li>
-                            <li className="hover:text-orange-300 cursor-pointer transition-colors duration-200">
-                                Contacto
-                            </li>
-                        </ul>
-                    </nav>
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <NavLink to="/" className="flex items-center gap-2 text-xl font-semibold text-primary">
+          <Coffee className="h-6 w-6" />
+          <span className="text-orange-500">Aroma</span>
+        </NavLink>
 
-                    <div>
-                        <CartWidget/>
-                    </div>
-                </div>
-            </div>
+        <div className="flex items-center gap-4">
+          <NavLink
+            to="/productos"
+            className={({ isActive }) =>
+              `text-sm font-medium transition-colors hover:text-primary hover:bg-gray-100 p-2 rounded-xl ${
+                isActive ? "text-primary" : "text-foreground"
+              }`
+            }
+          >
+            Productos
+          </NavLink>
+          <NavLink
+            to="/nosotros"
+            className={({ isActive }) =>
+              `text-sm font-medium transition-colors hover:text-primary hover:bg-gray-100 p-2 rounded-xl  ${
+                isActive ? "text-primary" : "text-foreground"
+              }`
+            }
+          >
+            Nosotros
+          </NavLink>
+          <NavLink
+            to="/contacto"
+            className={({ isActive }) =>
+              `text-sm font-medium transition-colors hover:text-primary hover:bg-gray-100 p-2 rounded-xl  ${
+                isActive ? "text-primary" : "text-foreground"
+              }`
+            }
+          >
+            Contacto
+          </NavLink>
+
+          <NavLink to="/carrito" className="relative">
+            <ShoppingCart className="h-5 w-5 text-foreground hover:text-primary transition-colors" />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-4 bg-green-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </NavLink>
         </div>
-    );
+      </nav>
+    </header>
+  );
 }

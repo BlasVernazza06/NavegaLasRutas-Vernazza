@@ -1,15 +1,58 @@
-export default function ItemListContainer({ greeting }) {
-    return (
-        <section className="container mx-auto px-4 py-20">
-            {/* Mensaje de bienvenida usando props */}
-            <div className="text-center mb-8 p-6 bg-orange-50 rounded-lg">
-                <h2 className="text-3xl md:text-4xl font-bold text-orange-800 mb-2">
-                    {greeting}
-                </h2>
-                <p className="text-lg text-gray-600">
-                    Próximamente encontrarás aquí nuestro catálogo de productos
-                </p>
-            </div>
-        </section>
-    );
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { getProducts, getProductsByCategory, categories } from "../data/products";
+import ItemList from "./item-list";
+import CategoryFilter from "./category-filter";
+import { Loader2 } from "lucide-react";
+
+export default function ItemListContainer() {
+  const { categoryId } = useParams();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    setLoading(true);
+
+    const fetchProducts = categoryId ? getProductsByCategory(categoryId) : getProducts();
+
+    fetchProducts
+      .then((data) => {
+        setProducts(data);
+      })
+      .catch((error) => {
+        console.error("Error al cargar productos:", error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [categoryId]);
+
+  const categoryName = categoryId 
+    ? categories.find(c => c.id === categoryId)?.name 
+    : "Todos los Productos";
+
+  return (
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">
+          {categoryId ? `Categoría: ${categoryName}` : "Todos los Productos"}
+        </h1>
+        <p className="text-muted-foreground">Descubre nuestra selección de cafés premium</p>
+      </div>
+
+      <CategoryFilter />
+
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : products.length > 0 ? (
+        <ItemList products={products} />
+      ) : (
+        <div className="text-center py-20">
+          <p className="text-muted-foreground text-lg">No se encontraron productos en esta categoría</p>
+        </div>
+      )}
+    </div>
+  );
 }
